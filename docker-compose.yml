@@ -1,0 +1,23 @@
+services:
+  api:
+    image: node:22-alpine
+    working_dir: /app
+    volumes:
+      - ./backend:/app
+    environment:
+      PORT: 4000
+      PYTHON_URL: http://analytics:8000
+    ports:
+      - "4000:4000"
+    command: sh -c "npm install && npm start"
+    depends_on:
+      - analytics
+
+  analytics:
+    image: python:3.12-slim
+    working_dir: /app
+    volumes:
+      - ./python-service:/app
+    ports:
+      - "8000:8000"
+    command: sh -c "pip install -r requirements.txt && uvicorn app:app --host 0.0.0.0 --port 8000"
